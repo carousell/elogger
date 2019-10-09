@@ -1,4 +1,4 @@
-package logger
+package elogger
 
 import (
 	"encoding/json"
@@ -30,8 +30,8 @@ type StructuredLog struct {
 	RawInterface interface{} `json:"rawInterface,omitempty"`
 }
 
-// LogEvent in json format
-func LogEvent(thelog StructuredLog, level, event, msg string) {
+// Event in json format
+func Event(thelog StructuredLog, level, event, msg string) {
 	thelog.Timestamp = time.Now().Format(time.RFC3339)
 	hostname, _ := os.Hostname()
 	thelog.Server = hostname

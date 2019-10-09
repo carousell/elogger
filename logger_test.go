@@ -1,4 +1,4 @@
-package logger
+package elogger
 
 import (
 	"bytes"
@@ -58,7 +58,7 @@ func TestLogEvent(t *testing.T) {
 		logData.Account = "account_id"
 
 		re := captureOutput(func() {
-			LogEvent(logData, "info", "testEventLog", "test event logger")
+			Event(logData, "info", "testEventLog", "test event logger")
 		})
 		assert.Equal(t, gjson.Get(re, "account").String(), "account_id")
 		assert.Equal(t, gjson.Get(re, "level").String(), "info")
