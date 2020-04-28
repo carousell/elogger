@@ -1,4 +1,4 @@
-module github.com/701search/elogger
+module github.com/carousell/elogger
 
 go 1.13
 
