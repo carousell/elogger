@@ -11,4 +11,4 @@ logData.Account = userID
 logData.RawInterface = anyInterface
 logData.RawInterface = anyInterface
 
-elogger.Event(logData, "error", "eventName", err.Error())```
+elogger.Event(logData, "error", "eventName", err.Error())
