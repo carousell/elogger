@@ -4,7 +4,10 @@ import (
 	"encoding/json"
 	"log"
 	"os"
+	"runtime"
 	"time"
+
+	jsoniter "github.com/json-iterator/go"
 )
 
 // Structured Logging functions
@@ -20,6 +23,8 @@ type StructuredLog struct {
 	IP        string `json:"ip,omitempty"`
 	Env       string `json:"env,omitempty"`
 	Server    string `json:"server,omitempty"`
+	Fn        string `json:"path,omitempty"`
+	Line      int    `json:"line,omitempty"`
 
 	Level        string      `json:"level,omitempty"`
 	Event        string      `json:"event,omitempty"`
@@ -39,7 +44,12 @@ func Event(thelog StructuredLog, level, event, msg string) {
 	thelog.Event = event
 	thelog.Message = msg
 	thelog.Service = ServiceName
-	logJSON, err := json.Marshal(thelog)
+	_, fn, line, ok := runtime.Caller(1)
+	if ok {
+		thelog.Fn = fn
+		thelog.Line = line
+	}
+	logJSON, err := jsoniter.Marshal(thelog)
 	if err != nil {
 		log.Println("Structured Logger: Logger JSON Marshal failed !", err.Error())
 	}
