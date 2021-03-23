@@ -4,7 +4,7 @@ Simple Structured logger
 
 Currently only JSON output format
 
-v1.0.3 What's new
+What's new
 
 * EventTag func to log with event name only. mostly for the event dashboard
 * Error func to log error with the event name in pointer receiver fashion
