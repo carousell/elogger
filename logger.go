@@ -1,7 +1,7 @@
 package elogger
 
 import (
-	"encoding/json"
+	"fmt"
 	"log"
 	"os"
 	"runtime"
@@ -23,8 +23,7 @@ type StructuredLog struct {
 	IP        string `json:"ip,omitempty"`
 	Env       string `json:"env,omitempty"`
 	Server    string `json:"server,omitempty"`
-	Fn        string `json:"path,omitempty"`
-	Line      int    `json:"line,omitempty"`
+	Path      string `json:"path,omitempty"`
 
 	Level        string      `json:"level,omitempty"`
 	Event        string      `json:"event,omitempty"`
@@ -46,14 +45,13 @@ func Event(thelog StructuredLog, level, event, msg string) {
 	thelog.Service = ServiceName
 	_, fn, line, ok := runtime.Caller(1)
 	if ok {
-		thelog.Fn = fn
-		thelog.Line = line
+		thelog.Path = fmt.Sprintf("%s:%v", fn, line)
 	}
-	logJSON, err := jsoniter.Marshal(thelog)
+	logJSON, err := jsoniter.MarshalToString(thelog)
 	if err != nil {
 		log.Println("Structured Logger: Logger JSON Marshal failed !", err.Error())
 	}
-	log.Println(string(logJSON))
+	log.Println(logJSON)
 }
 
 // LogNew is to log with a new StructuredLog struct
@@ -66,10 +64,49 @@ func LogNew(level, event, msg string) {
 	thelog.Event = event
 	thelog.Message = msg
 	thelog.Service = ServiceName
-	// todo: use sjson
-	logJSON, err := json.Marshal(thelog)
+	logJSON, err := jsoniter.MarshalToString(thelog)
 	if err != nil {
 		log.Println("Structured logger: Logger JSON Marshal failed !", err.Error())
 	}
-	log.Println(string(logJSON))
+	log.Println(logJSON)
+}
+
+func (thelog *StructuredLog) Fatal(event string, err error) {
+	if err != nil {
+		thelog.Timestamp = time.Now().Format(time.RFC3339)
+		hostname, _ := os.Hostname()
+		thelog.Server = hostname
+		thelog.Level = "error"
+		thelog.Event = event
+		thelog.Message = err.Error()
+		thelog.Service = ServiceName
+		_, fn, line, ok := runtime.Caller(1)
+		if ok {
+			thelog.Path = fmt.Sprintf("%s:%v", fn, line)
+		}
+		logJSON, err := jsoniter.MarshalToString(thelog)
+		if err != nil {
+			log.Println("Structured Logger: elogger JSON Marshal failed !", err.Error())
+		}
+		log.Fatal(logJSON)
+	}
+}
+
+func (thelog *StructuredLog) Error(event, msg string) {
+	thelog.Timestamp = time.Now().Format(time.RFC3339)
+	hostname, _ := os.Hostname()
+	thelog.Server = hostname
+	thelog.Level = "error"
+	thelog.Event = event
+	thelog.Message = msg
+	thelog.Service = ServiceName
+	_, fn, line, ok := runtime.Caller(1)
+	if ok {
+		thelog.Path = fmt.Sprintf("%s:%v", fn, line)
+	}
+	logJSON, err := jsoniter.MarshalToString(thelog)
+	if err != nil {
+		log.Println("Structured Logger: elogger JSON Marshal failed !", err.Error())
+	}
+	log.Print(logJSON)
 }
