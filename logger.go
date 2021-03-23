@@ -71,6 +71,7 @@ func LogNew(level, event, msg string) {
 	log.Println(logJSON)
 }
 
+// Fatal log error with event name and call log.Fatal()
 func (thelog *StructuredLog) Fatal(event string, err error) {
 	if err != nil {
 		thelog.Timestamp = time.Now().Format(time.RFC3339)
@@ -92,6 +93,7 @@ func (thelog *StructuredLog) Fatal(event string, err error) {
 	}
 }
 
+// Error log error with event name
 func (thelog *StructuredLog) Error(event, msg string) {
 	thelog.Timestamp = time.Now().Format(time.RFC3339)
 	hostname, _ := os.Hostname()
@@ -99,6 +101,25 @@ func (thelog *StructuredLog) Error(event, msg string) {
 	thelog.Level = "error"
 	thelog.Event = event
 	thelog.Message = msg
+	thelog.Service = ServiceName
+	_, fn, line, ok := runtime.Caller(1)
+	if ok {
+		thelog.Path = fmt.Sprintf("%s:%v", fn, line)
+	}
+	logJSON, err := jsoniter.MarshalToString(thelog)
+	if err != nil {
+		log.Println("Structured Logger: elogger JSON Marshal failed !", err.Error())
+	}
+	log.Print(logJSON)
+}
+
+// EventTag log info only with event name
+func (thelog *StructuredLog) EventTag(event string) {
+	thelog.Timestamp = time.Now().Format(time.RFC3339)
+	hostname, _ := os.Hostname()
+	thelog.Server = hostname
+	thelog.Level = "info"
+	thelog.Event = event
 	thelog.Service = ServiceName
 	_, fn, line, ok := runtime.Caller(1)
 	if ok {

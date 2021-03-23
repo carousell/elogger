@@ -79,3 +79,17 @@ func TestError(t *testing.T) {
 		assert.Equal(t, gjson.Get(re, "event").String(), "testEventLog")
 	})
 }
+
+func TestEventTag(t *testing.T) {
+	t.Run("LogEvent should log in json format", func(t *testing.T) {
+		var slog StructuredLog
+		slog.Account = "account_id"
+
+		re := captureOutput(func() {
+			slog.EventTag("testEventLog")
+		})
+		assert.Equal(t, gjson.Get(re, "account").String(), "account_id")
+		assert.Equal(t, gjson.Get(re, "level").String(), "info")
+		assert.Equal(t, gjson.Get(re, "event").String(), "testEventLog")
+	})
+}
