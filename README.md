@@ -1,6 +1,8 @@
 # elogger
+The new recommended logger for Mudah is md-utils/log or md-utils/tracing/log in repo https://github.com/carousell/md-utils
 
-Simple Structured logger
+
+Elogger - Simple Structured logger
 
 Currently only JSON output format
 
